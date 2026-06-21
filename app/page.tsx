@@ -1,65 +1,61 @@
-import Image from "next/image";
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Home() {
+  const router = useRouter()
+  const [loading, setLoading] = useState<'draw' | 'notes' | null>(null)
+
+  async function startNew(type: 'draw' | 'notes') {
+    setLoading(type)
+    const res = await fetch('/api/board/new', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type }),
+    })
+    const data = await res.json()
+    router.push(`/${type}/${data.id}`)
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+    <main
+      style={{ background: '#FAF7F0' }}
+      className="min-h-screen flex flex-col items-center justify-center px-6"
+    >
+      <h1
+        style={{ fontFamily: 'Georgia, serif', color: '#1B1B1F' }}
+        className="text-6xl font-medium mb-3 tracking-tight"
+      >
+        Esketchpad
+      </h1>
+      <p style={{ color: '#6B6456' }} className="mb-12 text-lg">
+        Draw or write. No sign-up. Just a link.
+      </p>
+
+      <div className="flex gap-4 flex-wrap justify-center">
+        <button
+          onClick={() => startNew('draw')}
+          disabled={loading !== null}
+          style={{ background: '#C4502E', color: '#FFF6EE' }}
+          className="px-8 py-4 rounded-xl text-lg font-medium disabled:opacity-50 min-w-[200px] hover:opacity-90 transition-opacity"
+        >
+          {loading === 'draw' ? 'Creating…' : 'Start drawing'}
+        </button>
+
+        <button
+          onClick={() => startNew('notes')}
+          disabled={loading !== null}
+          style={{
+            background: 'transparent',
+            color: '#2D5C4D',
+            border: '1.5px solid #2D5C4D',
+          }}
+          className="px-8 py-4 rounded-xl text-lg font-medium disabled:opacity-50 min-w-[200px] hover:bg-[#2D5C4D] hover:text-[#FAF7F0] transition-colors"
+        >
+          {loading === 'notes' ? 'Creating…' : 'Write a note'}
+        </button>
+      </div>
+    </main>
+  )
 }
