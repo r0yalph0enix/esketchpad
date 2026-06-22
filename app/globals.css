@@ -35,14 +35,39 @@ body {
   --button-bg: #EFE9DC;
 }
 
-.inkwell-canvas .excalidraw .App-toolbar-content {
-  flex-direction: column;
+/* Move hamburger menu to sit at the same vertical band as the
+   right-side mobile tools group (Library/Lock/Hand), but on the left */
+.inkwell-canvas .excalidraw .main-menu-trigger {
+  position: fixed !important;
+  top: 70px !important;
+  left: 12px !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 70 !important;
+  background: #EFE9DC !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  width: 44px !important;
+  height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-.inkwell-canvas .excalidraw .App-menu_top {
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  left: 16px !important;
-  top: 16px !important;
+/* Dropdown opens directly under the relocated button */
+.inkwell-canvas .excalidraw .dropdown-menu {
+  position: fixed !important;
+  top: 120px !important;
+  left: 12px !important;
   right: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  max-width: 200px !important;
+  z-index: 70 !important;
+}
+
+.inkwell-canvas .excalidraw .dropdown-menu-container {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: auto !important;
 }

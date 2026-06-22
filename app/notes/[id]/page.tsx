@@ -4,8 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import ShareBar from '@/components/ShareBar'
 
-const LINE_HEIGHT = 32 // px — must match the repeating background size below
-
 export default function NotesPage() {
   const params = useParams()
   const id = params.id as string
@@ -13,6 +11,7 @@ export default function NotesPage() {
   const [text, setText] = useState('')
   const [loaded, setLoaded] = useState(false)
   const [status, setStatus] = useState<'saved' | 'saving'>('saved')
+  const [lineHeight, setLineHeight] = useState(32)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -23,6 +22,16 @@ export default function NotesPage() {
         setLoaded(true)
       })
   }, [id])
+
+  // Shrink line spacing and font size on narrow screens
+  useEffect(() => {
+    function updateLineHeight() {
+      setLineHeight(window.innerWidth < 640 ? 26 : 32)
+    }
+    updateLineHeight()
+    window.addEventListener('resize', updateLineHeight)
+    return () => window.removeEventListener('resize', updateLineHeight)
+  }, [])
 
   function handleChange(value: string) {
     setText(value)
@@ -46,6 +55,10 @@ export default function NotesPage() {
     )
   }
 
+  const marginLeft = lineHeight === 26 ? 36 : 64
+  const textPaddingLeft = lineHeight === 26 ? 48 : 84
+  const fontSize = lineHeight === 26 ? 16 : 18
+
   return (
     <div style={{ background: '#EFE9E0' }} className="h-screen w-screen flex flex-col">
       <ShareBar id={id} type="notes" status={status} />
@@ -61,14 +74,14 @@ export default function NotesPage() {
             background: `
               linear-gradient(
                 to bottom,
-                transparent ${LINE_HEIGHT - 1}px,
-                #D8CDB8 ${LINE_HEIGHT - 1}px,
-                #D8CDB8 ${LINE_HEIGHT}px,
-                transparent ${LINE_HEIGHT}px
+                transparent ${lineHeight - 1}px,
+                #D8CDB8 ${lineHeight - 1}px,
+                #D8CDB8 ${lineHeight}px,
+                transparent ${lineHeight}px
               )
             `,
             backgroundColor: '#FAF7F0',
-            backgroundSize: `100% ${LINE_HEIGHT}px`,
+            backgroundSize: `100% ${lineHeight}px`,
             backgroundPositionY: '8px',
             boxShadow: '0 0 0 1px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06)',
           }}
@@ -79,7 +92,7 @@ export default function NotesPage() {
               position: 'absolute',
               top: 0,
               bottom: 0,
-              left: '64px',
+              left: `${marginLeft}px`,
               width: '1px',
               background: '#D99B8A',
             }}
@@ -94,17 +107,18 @@ export default function NotesPage() {
               position: 'absolute',
               inset: 0,
               paddingTop: '8px',
-              paddingLeft: '84px',
-              paddingRight: '32px',
+              paddingLeft: `${textPaddingLeft}px`,
+              paddingRight: '20px',
               background: 'transparent',
               color: '#2A2A28',
               fontFamily: "'Kalam', cursive, sans-serif",
-              fontSize: '18px',
-              lineHeight: `${LINE_HEIGHT}px`,
+              fontSize: `${fontSize}px`,
+              lineHeight: `${lineHeight}px`,
               border: 'none',
               outline: 'none',
               resize: 'none',
               overflowY: 'auto',
+              WebkitTextSizeAdjust: '100%',
             }}
             autoFocus
           />
